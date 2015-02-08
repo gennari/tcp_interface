@@ -79,8 +79,6 @@ void getMyIpAddress()
 
 void deliver(const char *mess, const char *host, int port)
 {
-
-
     tcp_interface::RCOMMessage msg;
     msg.header.stamp = ros::Time::now();
     stringstream ss;
@@ -106,6 +104,10 @@ void deliver(const char *mess, const char *host, int port)
         msg.robotsender=clientnames[ss.str()]+":"+ss.str();
         msg.robotreceiver = robotname;
         msg.value = string(mess[0]==' '?(mess+1):mess);
+	
+	/*if (strstr(mess," 13 ")==0)
+	  std::cout << "*** publish [" << mess <<  "] ***" << std::endl;*/
+	
         pubmsg.publish(msg);
     }
 }
@@ -166,7 +168,9 @@ void RCOMMessageCallback(const tcp_interface::RCOMMessage::ConstPtr& msg)
 
 bool cmdparse (const char * in, char * out, const char *host, int port) 
 {
-    //std::cout << "*** received from " << host << ":" << port << " [" << in << "] ***" << endl;
+     /* if (strstr(in," 13 ")==0)
+	std::cout << "*** received from " << host << ":" << port << " [" << in << "] ***" << endl;*/
+    
     sprintf(out,"OK");
     deliver(in,host,port);
 
