@@ -37,7 +37,7 @@ static pthread_t udpth;
 //static pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 
 
-static int ping_delay = 10; // sec.
+static int ping_delay = 3; // sec.
 
 
 void doParseMessage(unsigned int size, const char* buf){
