@@ -37,6 +37,8 @@ const char *topic_message     = "/RCOMMessage";
 //static int counter=0;
 
 string config_file,robotname, robothost, network_interface;
+
+CmdServer server;
 int TCP_server_port;
 
 //#define BUFLEN 2000
@@ -96,7 +98,7 @@ void deliver(const char *mess, const char *host, int port)
 
     while (sms >> buf)
         tokens.push_back(buf);
-    if(tokens[0]=="hello"){
+    if(tokens[0]=="!hello" && tokens.size()>1){
         if(clientnames.find(ss.str())==clientnames.end()){
             clientnames[ss.str()]=tokens[1];
         }
@@ -134,7 +136,7 @@ void hello(const char * mess, const char *host, int port)
     ss >> name;
     ss >> sport;
 
-    cout << "Received hello from " << name << "|" << host << ":" << sport << " ("<< host << ":" << port << ")" << endl;
+    cout << "Received !hello from " << name << "|" << host << ":" << sport << " ("<< host << ":" << port << ")" << endl;
 
     stringstream ks; ks << host << ":" << port;
     stringstream ns; ns << name << "|" << host << ":" << sport;
@@ -151,18 +153,31 @@ void hello(const char * mess, const char *host, int port)
 
 void RCOMMessageCallback(const tcp_interface::RCOMMessage::ConstPtr& msg)
 {
-    /*
-    cout << "Message to send: " << endl <<
+    
+    /* cout << " -- Message to send: " << endl <<
         msg->header <<
         msg->robotsender << endl <<
         msg->robotreceiver << endl <<
-        msg->value << endl << endl;*/
+        msg->value << endl << endl;  */
+        
     if(msg->robotsender==clients.robotname){
-        if(clients.send(msg->robotreceiver,msg->value+"\n\r")){
+
+        // send message to clients connected through the server port
+        for (int i=0; i<server.maxClientIndex(); i++) {
+          TcpConnection * conn = server.getConnection(i);
+          if (conn)
+            conn->send(msg->value+"\n\r");
+        }
+        
+        // send message to clients discovered through TCP interface protocol
+        bool r = clients.send(msg->robotreceiver,msg->value+"\n\r");
+        
+        /*
+        if(r){
             // cout<<"MESSAGGIO INVIATO------------"<<endl;
         }else{
             // cout<<"MESSAGGIO  NON   INVIATO------------"<<endl;
-        }
+        }*/
     }
 }
 
@@ -217,7 +232,7 @@ int main(int argc, char** argv)
     }
 
 
-    string tf_prefix="NONE";
+    string tf_prefix="NONAME";
     if(!n.getParam("tf_prefix", tf_prefix)){
         if(!np.getParam("robot_name",robotname))
         { robotname =tf_prefix;}
@@ -234,7 +249,6 @@ int main(int argc, char** argv)
 
     UDPStart();
 
-    CmdServer server;
     server.setParseFn(cmdparse);
     server.open(TCP_server_port);
     server.start();

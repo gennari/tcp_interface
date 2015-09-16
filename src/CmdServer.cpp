@@ -48,7 +48,7 @@ void CmdConnection::_run()
 {
 	if (clientSocket==0) return;
 		
-	sprintf(bufout,"\n\rCommand server\n\r> "); send(bufout);
+	// sprintf(bufout,"\n\rCommand server\n\r> "); send(bufout);
 	
 	while (running) {
 	

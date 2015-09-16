@@ -66,13 +66,13 @@ bool TcpClientList::connect(string name, string host, int port) {
       usleep(100);
       stringstream ss;
 
-      ss << "hello " << robotname << " " << TCP_server_port << "\n\r";
+      ss << "!hello " << robotname << " " << TCP_server_port << "\n\r";
       c->send(ss.str().c_str());
     }
    /* if (b && c->connected) {
         stringstream ss;
 
-        ss << "hello " << robotname << " " << TCP_server_port << "\n\r";
+        ss << "!hello " << robotname << " " << TCP_server_port << "\n\r";
         c->send(ss.str().c_str());
         usleep(100);
         c->receive(buffin,BUFINLEN-1);
@@ -86,7 +86,7 @@ bool TcpClientList::send(string name, string buffer) {
 }
 
 bool TcpClientList::send(string name, const char* buffer) {
-    if (name=="All"||name=="all"){
+    if (name=="All"||name=="all"||name=="ALL"){
         return sendToAll(buffer);
     }else{
     TcpClient *c = findClientByName(name);

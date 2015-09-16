@@ -41,21 +41,22 @@ static int ping_delay = 3; // sec.
 
 
 void doParseMessage(unsigned int size, const char* buf){
-    //cout << UDP_server_port << ": received [" << size << "] : " << buf << endl;
-    if (strstr(buf,"hello")!=0) {
+    // cout << UDP_server_port << ": received [" << size << "] : " << buf << endl;
+    if (strncmp(buf,"!hello",6)!=0) {
         stringstream temp,temp2;
         string ss,name,host,TcpPort,UdpPort;
         temp << string(buf);
         getline(temp, ss, ' ');
-       getline(temp, ss, ' ');
-       getline(temp, ss, ' ');
-       temp2 << ss;
-       getline(temp2,name, ':');
-       getline(temp2,host, ':');
-       getline(temp2,TcpPort, ':');
-       getline(temp2, UdpPort, ':');
-       //cout << "---------received:"<<name << ":"<<host<< ":"<<TcpPort<< ":"<<atoi(TcpPort.c_str())<<endl;
-       clients.connect(name,host,atoi(TcpPort.c_str()));
+        getline(temp, ss, ' ');
+        getline(temp, ss, ' ');
+        temp2 << ss;
+        getline(temp2,name, ':');
+        getline(temp2,host, ':');
+        getline(temp2,TcpPort, ':');
+        getline(temp2, UdpPort, ':');
+        // cout << "---------received:"<<name << ":"<<host<< ":"<<TcpPort<< ":"<<atoi(TcpPort.c_str())<<endl;
+        if (name.length()>1 && host.length()>2)
+          clients.connect(name,host,atoi(TcpPort.c_str()));
     }
 }
 
@@ -142,7 +143,7 @@ void* UDP_discover_run(void *)
         old=alive;
         usleep(ping_delay*1e6);
          
-        sprintf(buf,"hello from %s:%s:%d:%d",robotname.c_str(),robothost.c_str(),TCP_server_port,UDP_server_port);
+        sprintf(buf,"!hello from %s:%s:%d:%d",robotname.c_str(),robothost.c_str(),TCP_server_port,UDP_server_port);
         //cout << "ping around..." << buf << endl;
         UDPclient.sendToAll(strlen(buf),buf);
 

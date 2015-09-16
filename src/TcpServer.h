@@ -5,8 +5,9 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <stdlib.h>
-#include <string.h>
 #include <pthread.h>
+#include <string>
+#include <cstring>
 
 #ifdef WIN32
 	#include <winsock2.h>
@@ -38,6 +39,7 @@ public:
 	void stop();
 	bool send(const void* buffer, int len);
 	bool send(const char* buffer);
+        bool send(std::string buffer_str) { return send(buffer_str.c_str()); }
 	int receive(void *buffer, int len);
 	int getline(char *buffer, int len);
 
@@ -57,10 +59,10 @@ public:
 	void start();
 	void stop();
 	void _run();
-	int countConnections();
+	int countConnections(); // how many active connections
 	TcpConnection *getFirstConnection();
-	TcpConnection *getConnection(int k);
-	int getNumClient() { return nclient; }
+	TcpConnection *getConnection(int k); // May be null if the client disconnected
+	int maxClientIndex() { return nclient; } // MAX index of a client
 	virtual TcpConnection *newConnection()=0;
 
 	bool connected;
