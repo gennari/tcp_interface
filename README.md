@@ -21,8 +21,26 @@ HOW TO USE
 - connect to the TCP server with a client (e.g. telnet) and send some strings
 
 - strings sent from the client can be listened on the topic RCOMMessage
+  (e.g., use 'rostopic echo /RCOMMessage' to listen) 
 
 - strings published on the topic RCOMMessage are received by the client
+  (e.g., use 'rostopic pub /RCOMMessage ...' to publish as in this example:
+  
+  
+  rostopic pub /RCOMMessage tcp_interface/RCOMMessage "header:
+  seq: 0
+  stamp:
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+  robotsender: 'NONAME'
+  robotreceiver: 'all'
+  value: 'display_text_welcome'" --once 
+
+
+Note: a correct name of the sender robot is needed. 
+The current robot name is stored in the ROS parameter "robot_name".
+NONAME is used if no name has been assigned.
 
 
 
