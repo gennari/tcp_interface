@@ -1,0 +1,5 @@
+*~
+*.o
+*.so
+docs/latex
+docs/html
