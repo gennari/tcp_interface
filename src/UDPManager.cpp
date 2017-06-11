@@ -27,7 +27,7 @@ struct UDPNetworkClient: public NetworkedClient{
 int UDP_server_port=0;
 int UDPMinPort=0, UDPMaxPort=0;
 
-extern string config_file,robotname,robothost;
+extern string config_file,robot_name,robot_host;
 extern int TCP_server_port;
 
 static	UDPNetworkedSupplier UDPsupplier;
@@ -108,7 +108,7 @@ void* UDP_discover_run(void *)
 			}
 			 for (int UDPClientPort=UDPMinPort; UDPClientPort<=UDPMaxPort; UDPClientPort++) {
 				
-                 if (UDPClientPort==UDP_server_port &&(strcmp(robothost.c_str(),elems[0].c_str())==0)) continue;
+                 if (UDPClientPort==UDP_server_port &&(strcmp(robot_host.c_str(),elems[0].c_str())==0)) continue;
 				Address remote=Address::getAddressByName(elems[0].c_str(), UDPClientPort);
 				UDPclient.peers.insert(make_pair(remote, pinfo));
 			}
@@ -143,7 +143,7 @@ void* UDP_discover_run(void *)
         old=alive;
         usleep(ping_delay*1e6);
          
-        sprintf(buf,"!hello from %s:%s:%d:%d",robotname.c_str(),robothost.c_str(),TCP_server_port,UDP_server_port);
+        sprintf(buf,"!hello from %s:%s:%d:%d",robot_name.c_str(),robot_host.c_str(),TCP_server_port,UDP_server_port);
         //cout << "ping around..." << buf << endl;
         UDPclient.sendToAll(strlen(buf),buf);
 

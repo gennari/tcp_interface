@@ -36,7 +36,7 @@ const char *topic_message     = "/RCOMMessage";
 
 //static int counter=0;
 
-string config_file,robotname, robothost, network_interface;
+string config_file,robot_name, robot_host, network_interface;
 
 CmdServer server;
 int TCP_server_port;
@@ -66,7 +66,7 @@ void getMyIpAddress()
             char addressBuffer[INET_ADDRSTRLEN];
             inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
             printf("%s IP Address %s\n", ifa->ifa_name, addressBuffer);
-            if (string(ifa->ifa_name)==network_interface) robothost = string(addressBuffer);
+            if (string(ifa->ifa_name)==network_interface) robot_host = string(addressBuffer);
         } /*else if (ifa->ifa_addr->sa_family==AF_INET6) { // check it is IP6
         // is a valid IP6 Address
         tmpAddrPtr=&((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr;
@@ -104,7 +104,7 @@ void deliver(const char *mess, const char *host, int port)
         }
     }else{
         msg.robotsender=clientnames[ss.str()]+":"+ss.str();
-        msg.robotreceiver = robotname;
+        msg.robotreceiver = robot_name;
         msg.value = string(mess[0]==' '?(mess+1):mess);
 	
 	/*if (strstr(mess," 13 ")==0)
@@ -232,18 +232,15 @@ int main(int argc, char** argv)
     }
 
 
-    string tf_prefix="NONAME";
-    if(!n.getParam("tf_prefix", tf_prefix)){
-        if(!np.getParam("robot_name",robotname))
-        { robotname =tf_prefix;}
-    }else{
-        robotname = tf_prefix;
-    }
-    std::cout << "robotname = " << robotname << endl;
+    robot_name = "NONAME";
+	if (!n.getParam("robot_name",robot_name))
+		n.getParam("tf_prefix", robot_name);
+        
+    std::cout << "tcp_interface:: robot_name = " << robot_name << endl;
 
     getMyIpAddress();
-    clients.robotname = robotname;
-    clients.host= robothost;
+    clients.robotname = robot_name;
+    clients.host= robot_host;
     clients.TCP_server_port = TCP_server_port;
 
 
@@ -253,7 +250,7 @@ int main(int argc, char** argv)
     server.open(TCP_server_port);
     server.start();
     ROS_INFO_STREAM("TCP Listening on interface "<<network_interface<<endl);
-    ROS_INFO_STREAM("TCP Listening on ip "<<robothost<<endl);
+    ROS_INFO_STREAM("TCP Listening on ip "<<robot_host<<endl);
     ROS_INFO_STREAM("TCP Listening on port "<<TCP_server_port<<endl);
 
 
